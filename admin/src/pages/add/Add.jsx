@@ -1,102 +1,98 @@
 import React, { useState } from "react";
 
 const Add = () => {
-  const [foodName, setFoodName] = useState("");
+  const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
   const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Handle file selection
   const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setPreview(URL.createObjectURL(file));
+    }
   };
 
-  // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!title || !price || !image) {
+      alert("Please fill all fields!");
+      return;
+    }
 
     try {
+      setLoading(true);
       const formData = new FormData();
-      formData.append("name", foodName);
+      formData.append("image", image);
+      formData.append("title", title);
       formData.append("price", price);
-      formData.append("description", description);
-      formData.append("category", category);
-      if (image) {
-        formData.append("image", image);
-      }
 
-      const res = await fetch("http://localhost:5000/api/food/add", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch(
+        "https://your-backend.onrender.com/api/food/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       const data = await res.json();
+      console.log("Response:", data);
 
-      if (data.success) {
-        alert("Food added successfully!");
-        setFoodName("");
+      if (data.imageUrl) {
+        alert("Food item added successfully!");
+        setTitle("");
         setPrice("");
-        setDescription("");
-        setCategory("");
         setImage(null);
+        setPreview("");
       } else {
-        alert("Failed to add food.");
+        alert("Upload failed! Check backend response.");
       }
     } catch (err) {
-      console.error("Error uploading food:", err);
+      console.error("Error uploading:", err);
+      alert("Something went wrong!");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="add-container">
-      <h2>Add New Food Item</h2>
-      <form onSubmit={handleSubmit} className="add-form">
-        <div>
-          <label>Food Name:</label>
-          <input
-            type="text"
-            value={foodName}
-            onChange={(e) => setFoodName(e.target.value)}
-            required
+      <h2 className="add-title">Add Food Item</h2>
+      <form className="add-form" onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Food Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="add-input"
+        />
+        <input
+          type="number"
+          placeholder="Price"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          className="add-input"
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className="add-input"
+        />
+
+        {preview && (
+          <img
+            src={preview}
+            alt="Preview"
+            className="add-preview"
           />
-        </div>
+        )}
 
-        <div>
-          <label>Price:</label>
-          <input
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            required
-          />
-        </div>
-
-        <div>
-          <label>Description:</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-          />
-        </div>
-
-        <div>
-          <label>Category:</label>
-          <input
-            type="text"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            required
-          />
-        </div>
-
-        <div>
-          <label>Image:</label>
-          <input type="file" accept="image/*" onChange={handleImageChange} />
-        </div>
-
-        <button type="submit">Add Food</button>
+        <button type="submit" className="add-button" disabled={loading}>
+          {loading ? "Uploading..." : "Add Item"}
+        </button>
       </form>
     </div>
   );
