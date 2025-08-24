@@ -1,142 +1,98 @@
-import React, { useState } from "react";
-import "./Add.css"; // keep your existing styling
+import React, { useEffect, useState } from 'react'
+import "./Add.css"
+import { assets } from '../../assets/assets'
+import axios from "axios"
+import { toast } from 'react-toastify'
 
 const Add = () => {
-  const [foodDetails, setFoodDetails] = useState({
+
+  const [image, setImage] = useState(false)
+  const [data, setData] = useState({
     name: "",
     description: "",
     price: "",
-    category: "",
-    imageUrl: "", // Cloudinary URL
-  });
-  const [loading, setLoading] = useState(false);
+    category: "Salad"
+  })
 
-  // Handle text inputs
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFoodDetails((prev) => ({ ...prev, [name]: value }));
-  };
+  const onChangeHandler = (event) => {
+    const name = event.target.name
+    const value = event.target.value;
+    setData(data => ({ ...data, [name]: value }))
+  }
 
-  // Handle image upload
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
+  const onSubmitHandler = async (event) => {
+    event.preventDefault();
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("name", data.name)
+    formData.append("description", data.description)
+    formData.append("price", Number(data.price))
+    formData.append("category", data.category)
+    formData.append("image", image)
 
     try {
-      setLoading(true);
-      const res = await fetch(
-        "https://your-backend.onrender.com/api/food/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const data = await res.json();
-      if (data.imageUrl) {
-        setFoodDetails((prev) => ({ ...prev, imageUrl: data.imageUrl }));
-      }
-    } catch (error) {
-      console.error("Image upload failed:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Handle form submit
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const res = await fetch(
-        "https://your-backend.onrender.com/api/food/add",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(foodDetails),
-        }
-      );
-
-      const data = await res.json();
-      if (data.success) {
-        alert("Food item added successfully!");
-        setFoodDetails({
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/food/add`, formData)
+      if (response.data.success) {
+        setData({
           name: "",
           description: "",
           price: "",
-          category: "",
-          imageUrl: "",
-        });
+          category: "Salad"
+        })
+        setImage(false);
+        toast.success(response.data.message)
+      } else {
+        toast.error(response.data.message)
       }
     } catch (error) {
-      console.error("Error adding food item:", error);
+      toast.error("Something went wrong!")
     }
-  };
+  }
+
+  useEffect(() => {
+    console.log(data);
+  }, [data])
 
   return (
-    <div className="add-container">
-      <h2>Add New Food Item</h2>
-      <form className="add-form" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Food Name"
-          value={foodDetails.name}
-          onChange={handleChange}
-          required
-        />
-
-        <textarea
-          name="description"
-          placeholder="Description"
-          value={foodDetails.description}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="number"
-          name="price"
-          placeholder="Price"
-          value={foodDetails.price}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="text"
-          name="category"
-          placeholder="Category"
-          value={foodDetails.category}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageUpload}
-          required
-        />
-
-        {loading && <p>Uploading image...</p>}
-        {foodDetails.imageUrl && (
-          <img
-            src={foodDetails.imageUrl}
-            alt="Uploaded Preview"
-            className="preview-img"
-          />
-        )}
-
-        <button type="submit" className="submit-btn">
-          Add Food
-        </button>
+    <div className='add'>
+      <form className='flex-col' onSubmit={onSubmitHandler}>
+        <div className="add-img-upload-flex-col">
+          <p>Upload Image</p>
+          <label htmlFor="image">
+            <img src={image ? URL.createObjectURL(image) : assets.upload_area} alt='..'></img>
+          </label>
+          <input onChange={(e) => setImage(e.target.files[0])} type='file' id='image' hidden required></input>
+        </div>
+        <div className="add-product-name flex-col">
+          <p>Product Name</p>
+          <input onChange={onChangeHandler} value={data.name} type='text' name='name' placeholder='Type Here'></input>
+        </div>
+        <div className="add-product-description flex-col">
+          <p>Product Description</p>
+          <textarea onChange={onChangeHandler} value={data.description} name='description' rows='6' placeholder='Write Content here' required></textarea>
+        </div>
+        <div className="add-category-price">
+          <div className="add-category flex-col">
+            <p>Product Category</p>
+            <select onChange={onChangeHandler} name='category' value={data.category}>
+              <option value="Salad">Salad</option>
+              <option value="Rolls">Rolls</option>
+              <option value="Desert">Desert</option>
+              <option value="Sandwich">Sandwich</option>
+              <option value="Cake">Cake</option>
+              <option value="Pure Veg">Pure Veg</option>
+              <option value="Pasta">Pasta</option>
+              <option value="Noodles">Noodles</option>
+            </select>
+          </div>
+          <div className="add-price flex-col">
+            <p>Product price</p>
+            <input onChange={onChangeHandler} value={data.price} type='Number' name='price' placeholder='20'></input>
+          </div>
+        </div>
+        <button type='submit' className='add-btn'>ADD</button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default Add;
+export default Add
