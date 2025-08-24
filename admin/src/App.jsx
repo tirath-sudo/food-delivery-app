@@ -1,7 +1,7 @@
 import React from 'react'
 import Navbar from './components/navbar/navbar'
 import Sidebar from './components/sidebar/sidebar'
-import { Routes,Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Add from './pages/add/Add';
 import List from './pages/list/List';
 import Orders from './pages/orders/Orders';
@@ -9,7 +9,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-const url = "http://localhost:4000"
+const url = process.env.REACT_APP_API_URL;
 
 const App = () => {
   return (
