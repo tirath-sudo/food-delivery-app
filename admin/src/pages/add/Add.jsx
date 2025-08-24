@@ -22,15 +22,34 @@ const Add = () => {
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
-    const formData = new FormData();
-    formData.append("name", data.name)
-    formData.append("description", data.description)
-    formData.append("price", Number(data.price))
-    formData.append("category", data.category)
-    formData.append("image", image)
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/food/add`, formData)
+      const formData = new FormData();
+      formData.append("image", image);
+
+      // 1. Upload image first to backend -> Cloudinary
+      const uploadRes = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/food/upload`,
+        formData
+      );
+
+      if (!uploadRes.data.success) {
+        toast.error("Image upload failed!");
+        return;
+      }
+
+      const imageUrl = uploadRes.data.imageUrl;
+
+      // 2. Send food data with Cloudinary URL
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/food/add`,
+        {
+          ...data,
+          price: Number(data.price),
+          image: imageUrl,
+        }
+      );
+
       if (response.data.success) {
         setData({
           name: "",
@@ -44,6 +63,7 @@ const Add = () => {
         toast.error(response.data.message)
       }
     } catch (error) {
+      console.error(error);
       toast.error("Something went wrong!")
     }
   }
