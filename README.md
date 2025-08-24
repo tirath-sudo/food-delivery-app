@@ -154,5 +154,18 @@ Live Server Reloading: Implemented using Nodemon for efficient development.
 API Testing: Conducted using ThunderClient for robust backend development.
 
 
+<img width="1920" height="956" alt="pic1" src="https://github.com/user-attachments/assets/f0222f41-5a0d-45b4-aeaa-fba43ffe478e" />
+<img width="1920" height="969" alt="pic2" src="https://github.com/user-attachments/assets/78df12e9-9095-481f-b2ba-a07f75f19b04" />
+<img width="1920" height="968" alt="pic3" src="https://github.com/user-attachments/assets/de87e391-8b38-477e-ba35-c0d085582e1a" />
+<img width="1920" height="902" alt="pic4" src="https://github.com/user-attachments/assets/499b999d-e5a6-4c4b-bb91-7c58387c48f7" />
+<img width="1920" height="961" alt="pic5" src="https://github.com/user-attachments/assets/07214154-2a88-4e88-a572-8129485d5de4" />
+<img width="1920" height="976" alt="pic6" src="https://github.com/user-attachments/assets/d5dd0f05-6896-4243-b815-487088594b42" />
+<img width="1920" height="939" alt="pic7" src="https://github.com/user-attachments/assets/5f05ed41-ae2e-4bc3-8f57-d617cd7f6c90" />
 
 *************ADMIN PANEL*********************
+
+<img width="1920" height="960" alt="pic8" src="https://github.com/user-attachments/assets/c04457ec-21a9-4b26-ad11-30392e5c99a7" />
+<img width="1920" height="966" alt="pic9" src="https://github.com/user-attachments/assets/75caf773-61d7-4cb9-a837-0361fdd387e0" />
+<img width="1920" height="957" alt="pic10" src="https://github.com/user-attachments/assets/1453b99e-7330-4bcc-af56-023bc1917a54" />
+
+
