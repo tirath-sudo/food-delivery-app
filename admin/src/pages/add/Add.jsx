@@ -1,34 +1,32 @@
 import React, { useState } from "react";
+import "./Add.css"; // keep your existing styling
 
 const Add = () => {
-  const [title, setTitle] = useState("");
-  const [price, setPrice] = useState("");
-  const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState("");
+  const [foodDetails, setFoodDetails] = useState({
+    name: "",
+    description: "",
+    price: "",
+    category: "",
+    imageUrl: "", // Cloudinary URL
+  });
   const [loading, setLoading] = useState(false);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-      setPreview(URL.createObjectURL(file));
-    }
+  // Handle text inputs
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFoodDetails((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!title || !price || !image) {
-      alert("Please fill all fields!");
-      return;
-    }
+  // Handle image upload
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
 
     try {
       setLoading(true);
-      const formData = new FormData();
-      formData.append("image", image);
-      formData.append("title", title);
-      formData.append("price", price);
-
       const res = await fetch(
         "https://your-backend.onrender.com/api/food/upload",
         {
@@ -38,60 +36,103 @@ const Add = () => {
       );
 
       const data = await res.json();
-      console.log("Response:", data);
-
       if (data.imageUrl) {
-        alert("Food item added successfully!");
-        setTitle("");
-        setPrice("");
-        setImage(null);
-        setPreview("");
-      } else {
-        alert("Upload failed! Check backend response.");
+        setFoodDetails((prev) => ({ ...prev, imageUrl: data.imageUrl }));
       }
-    } catch (err) {
-      console.error("Error uploading:", err);
-      alert("Something went wrong!");
+    } catch (error) {
+      console.error("Image upload failed:", error);
     } finally {
       setLoading(false);
     }
   };
 
+  // Handle form submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch(
+        "https://your-backend.onrender.com/api/food/add",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(foodDetails),
+        }
+      );
+
+      const data = await res.json();
+      if (data.success) {
+        alert("Food item added successfully!");
+        setFoodDetails({
+          name: "",
+          description: "",
+          price: "",
+          category: "",
+          imageUrl: "",
+        });
+      }
+    } catch (error) {
+      console.error("Error adding food item:", error);
+    }
+  };
+
   return (
     <div className="add-container">
-      <h2 className="add-title">Add Food Item</h2>
+      <h2>Add New Food Item</h2>
       <form className="add-form" onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Food Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="add-input"
+          name="name"
+          placeholder="Food Name"
+          value={foodDetails.name}
+          onChange={handleChange}
+          required
         />
+
+        <textarea
+          name="description"
+          placeholder="Description"
+          value={foodDetails.description}
+          onChange={handleChange}
+          required
+        />
+
         <input
           type="number"
+          name="price"
           placeholder="Price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          className="add-input"
+          value={foodDetails.price}
+          onChange={handleChange}
+          required
         />
+
+        <input
+          type="text"
+          name="category"
+          placeholder="Category"
+          value={foodDetails.category}
+          onChange={handleChange}
+          required
+        />
+
         <input
           type="file"
           accept="image/*"
-          onChange={handleImageChange}
-          className="add-input"
+          onChange={handleImageUpload}
+          required
         />
 
-        {preview && (
+        {loading && <p>Uploading image...</p>}
+        {foodDetails.imageUrl && (
           <img
-            src={preview}
-            alt="Preview"
-            className="add-preview"
+            src={foodDetails.imageUrl}
+            alt="Uploaded Preview"
+            className="preview-img"
           />
         )}
 
-        <button type="submit" className="add-button" disabled={loading}>
-          {loading ? "Uploading..." : "Add Item"}
+        <button type="submit" className="submit-btn">
+          Add Food
         </button>
       </form>
     </div>
