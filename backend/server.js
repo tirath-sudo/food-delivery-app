@@ -8,13 +8,16 @@ import cors from "cors";
 import { connectDB } from "./config/db.js";
 import foodRouter from "./routes/foodRoutes.js";
 import userRouter from "./routes/userRoute.js"; // Corrected path
-import 'dotenv/config';
+import dotenv from "dotenv";
 import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
+
+dotenv.config();
 
 // app config
 const app = express();
 const port = process.env.PORT||4000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 // middleware
 app.use(express.json());
@@ -35,5 +38,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server Started on http://localhost:${port}`);
+  console.log(`Server Started on Port:${port}`);
 });
