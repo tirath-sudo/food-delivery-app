@@ -10,7 +10,7 @@ const List = () => {
   const [list, setList] = useState([]);
 
   const fetchList = async () => {
-    const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/food/list`);
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/food/list`);
     if (response.data.success) {
       setList(response.data.data)
     } else {
@@ -19,7 +19,7 @@ const List = () => {
   }
 
   const removeFood = async (foodId) => {
-    const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/food/remove`, { id: foodId })
+    const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/food/remove`, { id: foodId })
     await fetchList();
 
     if (response.data.success) {

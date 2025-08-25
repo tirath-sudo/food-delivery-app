@@ -7,7 +7,7 @@ import { assets } from './../../assets/assets';
 const Orders = () => {
 
   const statusHandler = async (event, orderId) => {
-    const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/order/status`, {
+    const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/order/status`, {
       orderId,
       status: event.target.value
     })
@@ -19,7 +19,7 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
 
   const fetchAllOrders = async () => {
-    const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/order/list`)
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/order/list`)
     if (response.data.success) {
       setOrders(response.data.data)
       console.log(response.data.data);

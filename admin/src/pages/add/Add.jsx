@@ -28,27 +28,18 @@ const Add = () => {
       formData.append("image", image);
 
       // 1. Upload image first to backend -> Cloudinary
-      const uploadRes = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/food/upload`,
-        formData
-      );
+     const fd = new FormData();
+     fd.append("name", data.name);
+     fd.append("description", data.description);
+     fd.append("price", data.price);
+     fd.append("category", data.category);
+     if (image) fd.append("image", image); // field name MUST be "image"
 
-      if (!uploadRes.data.success) {
-        toast.error("Image upload failed!");
-        return;
-      }
-
-      const imageUrl = uploadRes.data.imageUrl;
-
-      // 2. Send food data with Cloudinary URL
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/food/add`,
-        {
-          ...data,
-          price: Number(data.price),
-          image: imageUrl,
-        }
-      );
+     const response = await axios.post(
+       `${import.meta.env.VITE_API_URL}/api/food/add`,
+       fd,
+       { headers: { "Content-Type": "multipart/form-data" } }
+    );
 
       if (response.data.success) {
         setData({
